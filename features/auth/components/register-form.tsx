@@ -23,6 +23,8 @@ const log = logger.child({ module: "RegisterForm" });
 export const RegisterForm = () => {
   const router = useRouter();
   const [submitError, setSubmitError] = useState<Error | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState<boolean>(false);
+
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
@@ -35,14 +37,28 @@ export const RegisterForm = () => {
 
   const onSubmit = async (values: z.infer<typeof RegisterSchema>) => {
     setSubmitError(null);
+    setSubmitSuccess(false);
     try {
       const result = await mutateAsync(values);
+      setSubmitSuccess(true);
       // router.push("/sign-in");
     } catch (error) {
       log.error(error);
       setSubmitError(error as Error);
     }
   };
+
+  if (submitSuccess) {
+    return (
+      <div className="border-[1px] border-emerald-200 rounded-sm bg-emerald-50 p-2 text-muted-foreground ">
+        <h1 className="text-emerald-800 text-center">Account created</h1>
+        <p className="text-emerald-500">
+          Your account has been created. Please check your email to verify your
+          account.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <Form {...form}>
