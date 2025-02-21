@@ -8,34 +8,37 @@ generator client {
 }
 
 model User {
-  id            String          @id @default(cuid())
-  name          String?
-  email         String?         @unique
-  password      String
-  emailVerified DateTime?
-  image         String?
+  id            String          @id @default(cuid()) @map("TX_ID")
+  name          String?         @map("TX_NAME")
+  email         String?         @unique @map("TX_EMAIL")
+  password      String          @map("TX_PASSWORD")
+  emailVerified Boolean         @default(false) @map("BO_EMAIL_VERIFIED")
+  image         String?         @map("TX_IMAGE")
   accounts      Account[]
   sessions      Session[]
   // Optional for WebAuthn support
   Authenticator Authenticator[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt         DateTime            @default(now()) @map("DT_CREATED_AT")
+  updatedAt         DateTime            @updatedAt @map("DT_UPDATED_AT")
+  VerificationToken VerificationToken[]
+
+  @@map("TB_USER")
 }
 
 model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
+  id                String  @id @default(cuid()) @map("TX_ID")
+  userId            String  @map("TX_USER_ID")
+  type              String  @map("TX_TYPE")
+  provider          String  @map("TX_PROVIDER")
+  providerAccountId String  @map("TX_PROVIDER_ACCOUNT_ID")
+  refresh_token     String? @map("TX_REFRESH_TOKEN")
+  access_token      String? @map("TX_ACCESS_TOKEN")
+  expires_at        Int?    @map("IN_EXPIRES_AT")
+  token_type        String? @map("TX_TOKEN_TYPE")
+  scope             String? @map("TX_SCOPE")
+  id_token          String? @map("TX_ID_TOKEN")
+  session_state     String? @map("TX_SESSION_STATE")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -43,39 +46,56 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@map("TB_ACCOUNT")
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
+  id           String   @id @default(cuid()) @map("TX_ID")
+  sessionToken String   @unique @map("TX_SESSION_TOKEN")
+  userId       String   @map("TX_USER_ID")
+  expires      DateTime @map("DT_EXPIRES")
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("TB_SESSION")
+}
+
+enum TokenIdentifier {
+  CREATE_ACCOUNT
+  VERIFY_EMAIL
+  CONFIRMATION
 }
 
 model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
+  identifier TokenIdentifier @unique
+  token      String          @unique
+  expires    DateTime        @map("DT_EXPIRES")
+  verified   Boolean         @default(false) @map("BO_VERIFIED")
+  userId     String          @map("TX_USER_ID")
+  User       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([identifier, token])
+  @@map("TB_VERIFICATION_TOKEN")
 }
 
 // Optional for WebAuthn support
 model Authenticator {
-  credentialID         String  @unique
-  userId               String
-  providerAccountId    String
-  credentialPublicKey  String
-  counter              Int
-  credentialDeviceType String
-  credentialBackedUp   Boolean
-  transports           String?
+  credentialID         String  @unique @map("TX_CREDENTIAL_ID")
+  userId               String  @map("TX_USER_ID")
+  providerAccountId    String  @map("TX_PROVIDER_ACCOUNT_ID")
+  credentialPublicKey  String  @map("TX_CREDENTIAL_PUBLIC_KEY")
+  counter              Int     @map("IN_COUNTER")
+  credentialDeviceType String  @map("TX_CREDENTIAL_DEVICE_TYPE")
+  credentialBackedUp   Boolean @map("BO_CREDENTIAL_BACKED_UP")
+  transports           String? @map("TX_TRANSPORTS")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, credentialID])
+  @@map("TB_AUTHENTICATOR")
 }

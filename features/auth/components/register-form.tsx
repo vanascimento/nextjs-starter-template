@@ -21,7 +21,6 @@ import { useRouter } from "next/navigation";
 
 const log = logger.child({ module: "RegisterForm" });
 export const RegisterForm = () => {
-  const router = useRouter();
   const [submitError, setSubmitError] = useState<Error | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<boolean>(false);
 
