@@ -84,7 +84,7 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
   const existingUser = await findUserByEmail(email);
 
   if (existingUser) {
-    return { error: "Email already exists!" };
+    throw new Error("Email already exists!");
   }
 
   await prisma.$transaction(async (tx) => {

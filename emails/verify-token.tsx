@@ -52,7 +52,6 @@ export const VerifyTokenEmail = ({
                 your email, you can access your dashboard. If you not recognize
                 this email, please ignore
               </Text>
-
               <Button
                 className="bg-blue-500 w-full rounded-sm text-white p-2 text-center"
                 href={URL}
@@ -66,6 +65,12 @@ export const VerifyTokenEmail = ({
                 <Link className="text-blue-500" href={URL}>
                   {URL}
                 </Link>
+              </Text>
+              <Text className="text-muted-foreground w-full  text-center">
+                You verification token is:
+              </Text>
+              <Text className="w-full text-center text-3xl text-blue-500 font-semibold">
+                {token}
               </Text>
             </Section>
           </Container>

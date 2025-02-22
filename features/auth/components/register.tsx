@@ -1,12 +1,10 @@
 "use client";
 import Link from "next/link";
 import { z } from "zod";
-import { RegisterForm } from "./register-form";
 import { useState } from "react";
 import { RegisterSchema } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useCreateAccount } from "../api/use-create-account";
 import { logger } from "@/lib/logger";
 import {
   Form,
@@ -18,12 +16,16 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { register } from "@/app/actions/register";
+import { useRouter } from "next/navigation";
 
 const log = logger.child({ module: "RegisterForm" });
 
 export const RegisterComponent = () => {
   const [submitError, setSubmitError] = useState<Error | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<boolean>(false);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
@@ -33,18 +35,18 @@ export const RegisterComponent = () => {
     },
   });
 
-  const { mutateAsync } = useCreateAccount();
-
   const onSubmit = async (values: z.infer<typeof RegisterSchema>) => {
+    let toastId = toast.loading("Creating account...");
     setSubmitError(null);
     setSubmitSuccess(false);
     try {
-      const result = await mutateAsync(values);
-      setSubmitSuccess(true);
-      // router.push("/sign-in");
+      await register(values);
+      toast.success("Account created", { id: toastId });
+      router.push(`/verify-email?email=${values.email}`);
     } catch (error) {
       log.error(error);
       setSubmitError(error as Error);
+      toast.error("Error creating account", { id: toastId });
     }
   };
 

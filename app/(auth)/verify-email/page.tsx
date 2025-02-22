@@ -66,7 +66,7 @@ export default function VerifyEmailPage() {
     }
   };
 
-  if (!params.has(EMAIL_PARAM) || !params.has(TOKEN_PARAM)) {
+  if (!params.has(EMAIL_PARAM)) {
     router.push("/sign-in");
   }
 
