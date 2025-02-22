@@ -20,21 +20,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSeparator,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { REGEXP_ONLY_DIGITS } from "input-otp";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-const VerifyEmailSchema = z.object({
+const FormSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email",
   }),
@@ -43,15 +36,15 @@ const VerifyEmailSchema = z.object({
 export default function VerifyEmailPage() {
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof VerifyEmailSchema>>({
-    resolver: zodResolver(VerifyEmailSchema),
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
     defaultValues: {
       email: "",
     },
     reValidateMode: "onBlur",
   });
 
-  const onSubmit = async (values: z.infer<typeof VerifyEmailSchema>) => {
+  const onSubmit = async (values: z.infer<typeof FormSchema>) => {
     let toastId = toast.loading("Sending verification token");
     try {
       await generateNewVerificationToken(values.email);
