@@ -42,7 +42,7 @@ export const RegisterComponent = () => {
     try {
       await register(values);
       toast.success("Account created", { id: toastId });
-      router.push(`/verify-email?email=${values.email}`);
+      router.push(`/auth/verify-email?email=${values.email}`);
     } catch (error) {
       log.error(error);
       setSubmitError(error as Error);
@@ -68,7 +68,7 @@ export const RegisterComponent = () => {
   }
 
   return (
-    <div className="flex flex-col w-full px-[30%]">
+    <div className="flex flex-col w-full ">
       <div className="flex flex-col space-y-2 text-center ">
         <h1 className="text-2xl font-semibold tracking-tight ">
           Create an account
@@ -113,14 +113,6 @@ export const RegisterComponent = () => {
                     />
                   </FormControl>
                   <div className="w-full flex justify-between">
-                    <Button
-                      variant="link"
-                      size="sm"
-                      className="px-0 font-normal"
-                      asChild
-                    >
-                      <Link href="/auth/reset">Forgot password?</Link>
-                    </Button>
                     <Button
                       variant="link"
                       size="sm"

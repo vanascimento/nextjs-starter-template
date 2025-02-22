@@ -24,7 +24,7 @@ export const VerifyTokenEmail = ({
   baseUrl = "http://localhost:3000",
   email = "email@email.com",
 }: VerifyTokenEmailProps) => {
-  const URL = `${baseUrl}/verify-email?token=${token}&email=${email}`;
+  const URL = `${baseUrl}/auth/verify-email?token=${token}&email=${email}`;
   return (
     <Html>
       <Head />
@@ -102,22 +102,4 @@ const box = {
 const hr = {
   borderColor: "#e6ebf1",
   margin: "20px 0",
-};
-
-const paragraph = {
-  color: "#525f7f",
-
-  fontSize: "16px",
-  lineHeight: "24px",
-  textAlign: "left" as const,
-};
-
-const anchor = {
-  color: "#556cd6",
-};
-
-const footer = {
-  color: "#8898aa",
-  fontSize: "12px",
-  lineHeight: "16px",
 };

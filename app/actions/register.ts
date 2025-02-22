@@ -8,6 +8,7 @@ import { findUserByEmail } from "./user";
 import moment from "moment";
 import { randomBytes } from "crypto";
 import { sendVerificationEmail } from "./emails";
+import { signIn } from "@/auth";
 
 /**
  * Verifies the token for the provided email.
@@ -92,7 +93,7 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
       data: {
         email,
         password: hashedPassword,
-        emailVerified: true,
+        emailVerified: false,
       },
     });
 
@@ -113,6 +114,52 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
   //await sendVerificationEmail(verificationToken.email, verificationToken.token);
   return { success: "User created" };
 };
+
+export async function generateNewVerificationToken(email: string) {
+  const user = await findUserByEmail(email);
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const now = new Date();
+
+  const existingVerificationToken = await prisma.verificationToken.findFirst({
+    where: {
+      userId: user.id,
+      identifier: "VERIFY_EMAIL",
+      verified: false,
+    },
+  });
+
+  if (
+    moment(existingVerificationToken?.createdAt).isAfter(
+      moment().subtract(10, "minute")
+    )
+  ) {
+    throw new Error("You can only request a new token every 10 minutes");
+  }
+
+  if (existingVerificationToken) {
+    await prisma.verificationToken.delete({
+      where: {
+        userId: user.id,
+        verified: false,
+        identifier: "VERIFY_EMAIL",
+      },
+    });
+  }
+
+  const token = await prisma.verificationToken.create({
+    data: {
+      userId: user.id,
+      token: `${gerarNumeroSeisDigitos()}`,
+      expires: moment().add(1, "hour").toDate(),
+      identifier: "VERIFY_EMAIL",
+    },
+  });
+
+  await sendVerificationEmail(email, token.token);
+}
 
 function gerarNumeroSeisDigitos() {
   return Math.floor(100000 + Math.random() * 900000);

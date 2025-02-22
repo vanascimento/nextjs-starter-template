@@ -29,6 +29,16 @@ const log = logger.child({
 });
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
+  pages: {
+    signIn: "/sign-in",
+    signOut: "/sign-out",
+    newUser: "/register",
+  },
+  // callbacks: {
+  //   authorized: async ({ auth, request }) => {
+  //     return !!auth;
+  //   },
+  // },
   providers: [
     credentials({
       credentials: {
