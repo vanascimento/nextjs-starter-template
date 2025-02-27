@@ -3,11 +3,12 @@
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { RegisterSchema } from "@/schemas/auth";
-import { findUserByEmail } from "./user";
+import { GetUserByEmail } from "./user";
 import moment from "moment";
-import { randomBytes } from "crypto";
-import { sendResetPasswordEmail, sendVerificationEmail } from "./emails";
-import { signIn } from "@/auth";
+import {
+  SendEmailForResetPassword,
+  SendEmailToVerificationEmailAddress,
+} from "./emails";
 import { db } from "@/lib/prisma";
 import { logger } from "@/lib/logger";
 
@@ -19,8 +20,11 @@ const log = logger.child({ module: "register" });
  * @param token - The token to verify.
  * @returns An object with either an error message or a success message.
  */
-export const verifyTokenForEmail = async (email: string, token: string) => {
-  const user = await findUserByEmail(email);
+export const ExecuteTokenVerificationFormEmail = async (
+  email: string,
+  token: string
+) => {
+  const user = await GetUserByEmail(email);
   if (!user) {
     throw new Error("User not found");
   }
@@ -72,7 +76,9 @@ export const verifyTokenForEmail = async (email: string, token: string) => {
  * @param values - The values for the user registration.
  * @returns An object with either an error message or a success message.
  */
-export const register = async (values: z.infer<typeof RegisterSchema>) => {
+export const CreateNewUserWithEmailVerification = async (
+  values: z.infer<typeof RegisterSchema>
+) => {
   const validateFields = RegisterSchema.safeParse(values);
 
   console.log(validateFields);
@@ -83,7 +89,7 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
   const { email, password } = validateFields.data;
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const existingUser = await findUserByEmail(email);
+  const existingUser = await GetUserByEmail(email);
 
   if (existingUser) {
     throw new Error("Email already exists!");
@@ -101,13 +107,13 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
     let token = await tx.verificationToken.create({
       data: {
         userId: user.id,
-        token: `${gerarNumeroSeisDigitos()}`,
+        token: `${_generateSixRandomNumbers()}`,
         expires: moment().add(1, "hour").toDate(),
         identifier: "VERIFY_EMAIL",
       },
     });
 
-    await sendVerificationEmail(email, token.token);
+    await SendEmailToVerificationEmailAddress(email, token.token);
   });
 
   //const verificationToken = await generateVerificationToken(email);
@@ -116,12 +122,19 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
   return { success: "User created" };
 };
 
-export async function changePasswordAction(
+/**
+ * Verifies the token for the provided email.
+ *
+ * @param email - The email to verify.
+ * @param token - The token to verify.
+ * @returns An object with either an error message or a success message.
+ */
+export async function ExecuteChangePasswordAction(
   email: string,
   password: string,
   token: string
 ) {
-  const user = await findUserByEmail(email);
+  const user = await GetUserByEmail(email);
   if (!user) {
     throw new Error("User not found");
   }
@@ -163,8 +176,14 @@ export async function changePasswordAction(
 
   return { success: "Password changed" };
 }
-export async function generateResetVerification(email: string) {
-  const user = await findUserByEmail(email);
+
+/**
+ * Creates a token to reset the password.
+ *
+ * @param email - The email to reset the password.
+ */
+export async function CreateTokenForResetPassword(email: string) {
+  const user = await GetUserByEmail(email);
   if (!user) {
     throw new Error("User not found");
   }
@@ -191,18 +210,23 @@ export async function generateResetVerification(email: string) {
     let token = await tx.verificationToken.create({
       data: {
         userId: user.id,
-        token: `${gerarNumeroSeisDigitos()}`,
+        token: `${_generateSixRandomNumbers()}`,
         expires: moment().add(1, "hour").toDate(),
         identifier: "RESET_PASSWORD",
       },
     });
 
-    await sendResetPasswordEmail(email, token.token);
+    await SendEmailForResetPassword(email, token.token);
   });
 }
 
-export async function generateNewVerificationToken(email: string) {
-  const user = await findUserByEmail(email);
+/**
+ * Generates a new verification token.
+ *
+ * @param email - The email to generate the token.
+ */
+export async function CreateNewVerificationEmailToken(email: string) {
+  const user = await GetUserByEmail(email);
   if (!user) {
     throw new Error("User not found");
   }
@@ -240,15 +264,15 @@ export async function generateNewVerificationToken(email: string) {
   const token = await db.verificationToken.create({
     data: {
       userId: user.id,
-      token: `${gerarNumeroSeisDigitos()}`,
+      token: `${_generateSixRandomNumbers()}`,
       expires: moment().add(1, "hour").toDate(),
       identifier: "VERIFY_EMAIL",
     },
   });
 
-  await sendVerificationEmail(email, token.token);
+  await SendEmailToVerificationEmailAddress(email, token.token);
 }
 
-function gerarNumeroSeisDigitos() {
+function _generateSixRandomNumbers() {
   return Math.floor(100000 + Math.random() * 900000);
 }

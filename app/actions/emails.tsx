@@ -17,7 +17,15 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export async function sendVerificationEmail(email: string, token: string) {
+/**
+ * Sends an email to verify the email address.
+ * @param email email to send the verification email
+ * @param token  token to send the verification email
+ */
+export async function SendEmailToVerificationEmailAddress(
+  email: string,
+  token: string
+) {
   log.info({ email }, "Sending verification email");
 
   const html = await render(
@@ -43,7 +51,12 @@ export async function sendVerificationEmail(email: string, token: string) {
   log.info({ info }, "Email sent");
 }
 
-export async function sendResetPasswordEmail(email: string, token: string) {
+/**
+ * Sends an email to reset the password.
+ * @param email email to send the reset password email
+ * @param token  token to send the reset password email
+ */
+export async function SendEmailForResetPassword(email: string, token: string) {
   log.info({ email }, "Sending reset password email");
 
   const html = await render(

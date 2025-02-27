@@ -1,5 +1,5 @@
 "use client";
-import { verifyTokenForEmail } from "@/app/actions/register";
+import { ExecuteTokenVerificationFormEmail } from "@/app/actions/register";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -59,7 +59,7 @@ export default function VerifyEmailPage() {
   const onSubmit = async (values: z.infer<typeof VerifyEmailSchema>) => {
     let toastId = toast.loading("Verifying email");
     try {
-      await verifyTokenForEmail(values.email, values.token);
+      await ExecuteTokenVerificationFormEmail(values.email, values.token);
       router.push("/sign-in");
       toast.success("Email verified", { id: toastId });
     } catch (error) {

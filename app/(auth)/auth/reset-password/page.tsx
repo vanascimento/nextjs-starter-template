@@ -1,8 +1,8 @@
 "use client";
-import { logginAction } from "@/app/actions/login";
+import { InitiateLoginProcessAction } from "@/app/actions/login";
 import {
-  changePasswordAction,
-  verifyTokenForEmail,
+  ExecuteChangePasswordAction,
+  ExecuteTokenVerificationFormEmail,
 } from "@/app/actions/register";
 import { Button } from "@/components/ui/button";
 import {
@@ -56,13 +56,13 @@ export default function VerifyEmailPage() {
   const onSubmit = async (values: z.infer<typeof ResetPasswordSchema>) => {
     let toastId = toast.loading("Verifying email");
     try {
-      await changePasswordAction(
+      await ExecuteChangePasswordAction(
         values.email,
         values.confirmPassword,
         values.token
       );
       toast.success("Password changed with success", { id: toastId });
-      await logginAction(values.email, values.confirmPassword);
+      await InitiateLoginProcessAction(values.email, values.confirmPassword);
       router.push(`/main`);
     } catch (error) {
       toast.error((error as Error).message, { id: toastId });

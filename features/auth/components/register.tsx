@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { register } from "@/app/actions/register";
+import { CreateNewUserWithEmailVerification } from "@/app/actions/register";
 import { useRouter } from "next/navigation";
 
 const log = logger.child({ module: "RegisterForm" });
@@ -40,7 +40,7 @@ export const RegisterComponent = () => {
     setSubmitError(null);
     setSubmitSuccess(false);
     try {
-      await register(values);
+      await CreateNewUserWithEmailVerification(values);
       toast.success("Account created", { id: toastId });
       router.push(`/auth/verify-email?email=${values.email}`);
     } catch (error) {

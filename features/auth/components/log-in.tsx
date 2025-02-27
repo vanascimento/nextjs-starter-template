@@ -17,9 +17,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { register } from "@/app/actions/register";
+import { CreateNewUserWithEmailVerification } from "@/app/actions/register";
 import { useRouter } from "next/navigation";
-import { logginAction } from "@/app/actions/login";
+import { InitiateLoginProcessAction } from "@/app/actions/login";
 
 const log = logger.child({ module: "RegisterForm" });
 
@@ -39,7 +39,7 @@ export const LogInComponent = () => {
     let toastId = toast.loading("Sign in...");
     setSubmitError(null);
     try {
-      await logginAction(values.email, values.password);
+      await InitiateLoginProcessAction(values.email, values.password);
       toast.success("Succesful log in", { id: toastId });
       router.push(`/main`);
     } catch (error) {

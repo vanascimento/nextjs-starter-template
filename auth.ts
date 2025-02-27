@@ -4,7 +4,7 @@ import credentials from "next-auth/providers/credentials";
 import email from "next-auth/providers/email";
 import { signInSchema } from "./lib/zod";
 import { logger } from "./lib/logger";
-import { findUserByEmail } from "./app/actions/user";
+import { GetUserByEmail } from "./app/actions/user";
 import { db } from "./lib/prisma";
 import bcrypt from "bcryptjs";
 
@@ -56,7 +56,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const { email, password } = credentials;
 
-        let user = await findUserByEmail(String(email));
+        let user = await GetUserByEmail(String(email));
         if (!user) {
           return null;
         }

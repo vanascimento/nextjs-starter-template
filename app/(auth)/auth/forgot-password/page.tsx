@@ -1,8 +1,8 @@
 "use client";
 import {
-  generateNewVerificationToken,
-  generateResetVerification,
-  verifyTokenForEmail,
+  CreateNewVerificationEmailToken,
+  CreateTokenForResetPassword,
+  ExecuteTokenVerificationFormEmail,
 } from "@/app/actions/register";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,7 +48,7 @@ export default function VerifyEmailPage() {
   const onSubmit = async (values: z.infer<typeof FormSchema>) => {
     let toastId = toast.loading("Sending verification token");
     try {
-      await generateResetVerification(values.email);
+      await CreateTokenForResetPassword(values.email);
       router.push("/auth/reset-password?email=" + values.email);
       toast.success("Verification token was sent, verify your e-mail", {
         id: toastId,
