@@ -14,6 +14,7 @@ const authRoutes = [
   "/sign-out",
   "/auth/verify-email",
   "/auth/reset-password",
+  "/auth/forgot-password",
 ];
 export default auth((req) => {
   const isLoggedIn = !!req.auth;

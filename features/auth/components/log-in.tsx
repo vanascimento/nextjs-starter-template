@@ -99,7 +99,7 @@ export const LogInComponent = () => {
                       className="px-0 font-normal"
                       asChild
                     >
-                      <Link href="/auth/forget-password">Forgot password?</Link>
+                      <Link href="/auth/forgot-password">Forgot password?</Link>
                     </Button>
 
                     <Button

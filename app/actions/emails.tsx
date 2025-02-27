@@ -1,4 +1,5 @@
 "use server";
+import ResetPasswordEmail from "@/emails/reset-password";
 import VerifyTokenEmail from "@/emails/verify-token";
 import { logger } from "@/lib/logger";
 import { render } from "@react-email/components";
@@ -46,7 +47,7 @@ export async function sendResetPasswordEmail(email: string, token: string) {
   log.info({ email }, "Sending reset password email");
 
   const html = await render(
-    <VerifyTokenEmail
+    <ResetPasswordEmail
       baseUrl="http://localhost:3000"
       email={email}
       token={token}

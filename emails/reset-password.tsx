@@ -14,16 +14,16 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 
-interface VerifyTokenEmailProps {
+interface ResetPasswordEmailProps {
   token: string;
   baseUrl: string;
   email: string;
 }
-export const VerifyTokenEmail = ({
+export const ResetPasswordEmail = ({
   token = "123456",
   baseUrl = "http://localhost:3000",
   email = "email@email.com",
-}: VerifyTokenEmailProps) => {
+}: ResetPasswordEmailProps) => {
   const URL = `${baseUrl}/auth/reset-password?token=${token}&email=${email}`;
   return (
     <Html>
@@ -79,7 +79,7 @@ export const VerifyTokenEmail = ({
   );
 };
 
-export default VerifyTokenEmail;
+export default ResetPasswordEmail;
 
 const main = {
   backgroundColor: "#f6f9fc",

@@ -53,6 +53,7 @@ export default function VerifyEmailPage() {
         id: toastId,
       });
     } catch (error) {
+      form.setError("email", { message: (error as Error).message });
       toast.error((error as Error).message, { id: toastId });
     }
   };

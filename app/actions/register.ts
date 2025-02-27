@@ -9,7 +9,9 @@ import { randomBytes } from "crypto";
 import { sendResetPasswordEmail, sendVerificationEmail } from "./emails";
 import { signIn } from "@/auth";
 import { db } from "@/lib/prisma";
+import { logger } from "@/lib/logger";
 
+const log = logger.child({ module: "register" });
 /**
  * Verifies the token for the provided email.
  *
@@ -45,8 +47,7 @@ export const verifyTokenForEmail = async (email: string, token: string) => {
   await db.$transaction(async (tx) => {
     await tx.verificationToken.update({
       where: {
-        identifier: "VERIFY_EMAIL",
-        token: token,
+        id: verificationToken.id,
       },
       data: {
         verified: true,
@@ -115,6 +116,53 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
   return { success: "User created" };
 };
 
+export async function changePasswordAction(
+  email: string,
+  password: string,
+  token: string
+) {
+  const user = await findUserByEmail(email);
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const verificationToken = await db.verificationToken.findFirst({
+    where: {
+      userId: user.id,
+      token: token,
+      identifier: "RESET_PASSWORD",
+      verified: false,
+    },
+  });
+
+  if (!verificationToken) {
+    log.warn({ email, token }, "Invalid token");
+    throw new Error("Invalid token");
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  await db.$transaction(async (tx) => {
+    await tx.verificationToken.update({
+      where: {
+        id: verificationToken.id,
+      },
+      data: {
+        verified: true,
+      },
+    });
+
+    await tx.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        password: hashedPassword,
+      },
+    });
+  });
+
+  return { success: "Password changed" };
+}
 export async function generateResetVerification(email: string) {
   const user = await findUserByEmail(email);
   if (!user) {
@@ -131,21 +179,11 @@ export async function generateResetVerification(email: string) {
     },
   });
 
-  // if (
-  //   moment(existingVerificationToken?.createdAt).isAfter(
-  //     moment().subtract(10, "minute")
-  //   )
-  // ) {
-  //   throw new Error("You can only request a new token every 10 minutes");
-  // }
-
   await db.$transaction(async (tx) => {
     if (existingVerificationToken) {
       await tx.verificationToken.delete({
         where: {
-          userId: user.id,
-          verified: false,
-          identifier: "RESET_PASSWORD",
+          id: existingVerificationToken.id,
         },
       });
     }
@@ -169,6 +207,10 @@ export async function generateNewVerificationToken(email: string) {
     throw new Error("User not found");
   }
 
+  if (user.emailVerified) {
+    throw new Error("Email already verified");
+  }
+
   const now = new Date();
 
   const existingVerificationToken = await db.verificationToken.findFirst({
@@ -190,9 +232,7 @@ export async function generateNewVerificationToken(email: string) {
   if (existingVerificationToken) {
     await db.verificationToken.delete({
       where: {
-        userId: user.id,
-        verified: false,
-        identifier: "VERIFY_EMAIL",
+        id: existingVerificationToken.id,
       },
     });
   }

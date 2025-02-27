@@ -70,8 +70,9 @@ enum TokenIdentifier {
 }
 
 model VerificationToken {
-  identifier TokenIdentifier @unique
-  token      String          @unique
+  id         String          @id @default(cuid()) @map("TX_ID")
+  identifier TokenIdentifier @map("EN_IDENTIFIER")
+  token      String          @map("TX_TOKEN")
   expires    DateTime        @map("DT_EXPIRES")
   verified   Boolean         @default(false) @map("BO_VERIFIED")
   userId     String          @map("TX_USER_ID")
