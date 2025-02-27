@@ -1,10 +1,11 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import NextAuth, { DefaultSession, User } from "next-auth";
-import { prisma } from "./lib/prisma";
 import credentials from "next-auth/providers/credentials";
 import email from "next-auth/providers/email";
 import { signInSchema } from "./lib/zod";
 import { logger } from "./lib/logger";
+import { findUserByEmail } from "./app/actions/user";
+import { db } from "./lib/prisma";
 
 declare module "next-auth" {
   /**
@@ -14,6 +15,7 @@ declare module "next-auth" {
     user: {
       /** The user's postal address. */
       address: string;
+      emailVerified: boolean;
       /**
        * By default, TypeScript merges new interface properties and overwrites existing ones.
        * In this case, the default session user properties will be overwritten,
@@ -28,7 +30,10 @@ const log = logger.child({
   module: "auth",
 });
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(db),
+  session: {
+    strategy: "jwt",
+  },
   pages: {
     signIn: "/sign-in",
     signOut: "/sign-out",
@@ -43,15 +48,26 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     credentials({
       credentials: {
         email: {},
-        papassword: {},
+        password: {},
       },
       authorize: async (credentials) => {
-        let user: User | null = null;
-
         log.debug(credentials, "entering in authorize function");
 
-        const { email, password } = await signInSchema.parseAsync(credentials);
-        return user;
+        const { email, password } = credentials;
+
+        let user = await findUserByEmail(String(email));
+        if (!user) {
+          return null;
+        }
+
+        if (!user.emailVerified) {
+          return null;
+        }
+        return {
+          id: user.id,
+          email: user.email,
+          emailVerified: user.emailVerified,
+        };
       },
     }),
   ],

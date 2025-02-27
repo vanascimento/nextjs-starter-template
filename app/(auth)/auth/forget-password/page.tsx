@@ -61,9 +61,9 @@ export default function VerifyEmailPage() {
     <div className="w-full h-full  flex flex-row justify-center items-center">
       <Card className="rounded-sm">
         <CardHeader>
-          <CardTitle>Receive a new verification token</CardTitle>
+          <CardTitle>Receive a new token to change your password</CardTitle>
           <CardDescription>
-            Receive a new verification token by entering your email below.
+            Receive a new token to change your password by entering your email
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center space-y-4">
@@ -98,7 +98,7 @@ export default function VerifyEmailPage() {
                 className="w-full"
                 type="submit"
               >
-                Give-me a new token
+                Recovery my password
               </Button>
               <Link
                 className="w-full flex justify-center underline text-sm text-muted-foreground"

@@ -1,5 +1,14 @@
-import { prisma } from "@/lib/prisma";
+"use server";
+import { logger } from "@/lib/logger";
+import { db } from "@/lib/prisma";
 
+const log = logger.child({ module: "user" });
 export async function findUserByEmail(email: string) {
-  return await prisma.user.findFirst({ where: { email } });
+  log.info({ email }, "Finding user by email");
+  try {
+    return await db.user.findUnique({ where: { email } });
+  } catch (e) {
+    log.error({ email }, "Error finding user by email");
+    return null;
+  }
 }

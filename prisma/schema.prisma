@@ -66,6 +66,7 @@ enum TokenIdentifier {
   CREATE_ACCOUNT
   VERIFY_EMAIL
   CONFIRMATION
+  RECOVERY_PASSWORD
 }
 
 model VerificationToken {

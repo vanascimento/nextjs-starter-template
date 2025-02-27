@@ -2,13 +2,13 @@
 
 import { z } from "zod";
 import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma";
 import { RegisterSchema } from "@/schemas/auth";
 import { findUserByEmail } from "./user";
 import moment from "moment";
 import { randomBytes } from "crypto";
 import { sendVerificationEmail } from "./emails";
 import { signIn } from "@/auth";
+import { db } from "@/lib/prisma";
 
 /**
  * Verifies the token for the provided email.
@@ -23,7 +23,7 @@ export const verifyTokenForEmail = async (email: string, token: string) => {
     throw new Error("User not found");
   }
 
-  const verificationToken = await prisma.verificationToken.findFirst({
+  const verificationToken = await db.verificationToken.findFirst({
     where: {
       userId: user.id,
       token: token,
@@ -42,7 +42,7 @@ export const verifyTokenForEmail = async (email: string, token: string) => {
     throw new Error("Token already verified");
   }
 
-  await prisma.$transaction(async (tx) => {
+  await db.$transaction(async (tx) => {
     await tx.verificationToken.update({
       where: {
         identifier: "VERIFY_EMAIL",
@@ -88,7 +88,7 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
     throw new Error("Email already exists!");
   }
 
-  await prisma.$transaction(async (tx) => {
+  await db.$transaction(async (tx) => {
     let user = await tx.user.create({
       data: {
         email,
@@ -123,7 +123,7 @@ export async function generateNewVerificationToken(email: string) {
 
   const now = new Date();
 
-  const existingVerificationToken = await prisma.verificationToken.findFirst({
+  const existingVerificationToken = await db.verificationToken.findFirst({
     where: {
       userId: user.id,
       identifier: "VERIFY_EMAIL",
@@ -140,7 +140,7 @@ export async function generateNewVerificationToken(email: string) {
   }
 
   if (existingVerificationToken) {
-    await prisma.verificationToken.delete({
+    await db.verificationToken.delete({
       where: {
         userId: user.id,
         verified: false,
@@ -149,7 +149,7 @@ export async function generateNewVerificationToken(email: string) {
     });
   }
 
-  const token = await prisma.verificationToken.create({
+  const token = await db.verificationToken.create({
     data: {
       userId: user.id,
       token: `${gerarNumeroSeisDigitos()}`,

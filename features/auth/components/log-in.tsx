@@ -41,7 +41,7 @@ export const LogInComponent = () => {
     try {
       await logginAction(values.email, values.password);
       toast.success("Succesful log in", { id: toastId });
-      router.push(`/dashboard`);
+      router.push(`/main`);
     } catch (error) {
       log.error(error);
       setSubmitError(error as Error);
@@ -99,7 +99,7 @@ export const LogInComponent = () => {
                       className="px-0 font-normal"
                       asChild
                     >
-                      <Link href="/auth/reset">Forgot password?</Link>
+                      <Link href="/auth/forget-password">Forgot password?</Link>
                     </Button>
 
                     <Button
