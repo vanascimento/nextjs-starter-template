@@ -10,10 +10,10 @@ export const config = {
 const authRoutes = [
   "/auth",
   "/auth/send-verification-token",
-  "/auth/forget-password",
   "/register",
   "/sign-out",
   "/auth/verify-email",
+  "/auth/reset-password",
 ];
 export default auth((req) => {
   const isLoggedIn = !!req.auth;

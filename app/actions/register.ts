@@ -6,7 +6,7 @@ import { RegisterSchema } from "@/schemas/auth";
 import { findUserByEmail } from "./user";
 import moment from "moment";
 import { randomBytes } from "crypto";
-import { sendVerificationEmail } from "./emails";
+import { sendResetPasswordEmail, sendVerificationEmail } from "./emails";
 import { signIn } from "@/auth";
 import { db } from "@/lib/prisma";
 
@@ -114,6 +114,54 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
   //await sendVerificationEmail(verificationToken.email, verificationToken.token);
   return { success: "User created" };
 };
+
+export async function generateResetVerification(email: string) {
+  const user = await findUserByEmail(email);
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const now = new Date();
+
+  const existingVerificationToken = await db.verificationToken.findFirst({
+    where: {
+      userId: user.id,
+      identifier: "RESET_PASSWORD",
+      verified: false,
+    },
+  });
+
+  // if (
+  //   moment(existingVerificationToken?.createdAt).isAfter(
+  //     moment().subtract(10, "minute")
+  //   )
+  // ) {
+  //   throw new Error("You can only request a new token every 10 minutes");
+  // }
+
+  await db.$transaction(async (tx) => {
+    if (existingVerificationToken) {
+      await tx.verificationToken.delete({
+        where: {
+          userId: user.id,
+          verified: false,
+          identifier: "RESET_PASSWORD",
+        },
+      });
+    }
+
+    let token = await tx.verificationToken.create({
+      data: {
+        userId: user.id,
+        token: `${gerarNumeroSeisDigitos()}`,
+        expires: moment().add(1, "hour").toDate(),
+        identifier: "RESET_PASSWORD",
+      },
+    });
+
+    await sendResetPasswordEmail(email, token.token);
+  });
+}
 
 export async function generateNewVerificationToken(email: string) {
   const user = await findUserByEmail(email);

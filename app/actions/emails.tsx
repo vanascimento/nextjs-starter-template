@@ -41,3 +41,28 @@ export async function sendVerificationEmail(email: string, token: string) {
 
   log.info({ info }, "Email sent");
 }
+
+export async function sendResetPasswordEmail(email: string, token: string) {
+  log.info({ email }, "Sending reset password email");
+
+  const html = await render(
+    <VerifyTokenEmail
+      baseUrl="http://localhost:3000"
+      email={email}
+      token={token}
+    />,
+    {
+      pretty: true,
+    }
+  );
+
+  log.info({ email }, "Email rendered");
+
+  const info = await transporter.sendMail({
+    from: "onboarding@resend.dev",
+    to: email,
+    subject: "Change your password",
+    html,
+  });
+  log.info({ info }, "Email sent");
+}

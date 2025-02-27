@@ -6,6 +6,7 @@ import { signInSchema } from "./lib/zod";
 import { logger } from "./lib/logger";
 import { findUserByEmail } from "./app/actions/user";
 import { db } from "./lib/prisma";
+import bcrypt from "bcryptjs";
 
 declare module "next-auth" {
   /**
@@ -61,6 +62,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         if (!user.emailVerified) {
+          return null;
+        }
+
+        const passwordMatch = await bcrypt.compareSync(
+          String(password),
+          user.password
+        );
+        if (!passwordMatch) {
           return null;
         }
         return {
