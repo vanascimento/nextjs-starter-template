@@ -17,6 +17,8 @@ declare module "next-auth" {
       /** The user's postal address. */
       address: string;
       emailVerified: boolean;
+      name: string;
+      darkMode: boolean;
       /**
        * By default, TypeScript merges new interface properties and overwrites existing ones.
        * In this case, the default session user properties will be overwritten,
@@ -80,4 +82,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+  callbacks: {
+    async session({ session, token }) {
+      log.debug({ session, token }, "entering in session callback");
+      let user = await GetUserByEmail(String(token.email));
+      if (!user) {
+        return session;
+      }
+
+      session.user.name = user.name || "";
+      session.user.darkMode = user.darkMode || false;
+      log.debug({ session }, "session callback");
+      return session;
+    },
+  },
 });

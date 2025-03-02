@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/sidebar";
 import { signOut, useSession } from "next-auth/react";
 import LogoutButton from "./auth/logout-button";
+import useProfileStore from "@/features/profile/hooks/use-profile-store";
 
 export function NavUser({
   user,
@@ -41,6 +42,7 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const { data } = useSession();
+  const { openModal } = useProfileStore();
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -77,7 +79,7 @@ export function NavUser({
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">
-                    {data?.user.email}
+                    {data?.user.name}
                   </span>
                   <span className="truncate text-xs">{data?.user.email}</span>
                 </div>
@@ -92,9 +94,9 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={openModal}>
                 <BadgeCheck />
-                Account
+                Profile
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <CreditCard />
