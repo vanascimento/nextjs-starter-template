@@ -29,8 +29,8 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import saveProfileSettings from "../api/get-profile";
 import { logger } from "@/lib/logger";
+import saveProfileSettings from "../api/save-profile-settings";
 
 interface EditProfileDialogProps {
   openButtonText?: string;
