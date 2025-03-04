@@ -3,6 +3,7 @@
 import { auth } from "@/auth";
 import { ChangeProfileSettingsSchemaType } from "../schema/change-profile-settings";
 import { db } from "@/lib/prisma";
+import { LANGUAGE } from "@prisma/client";
 
 /**
  * Save the profile settings to the database
@@ -22,6 +23,7 @@ export default async function saveProfileSettings(
     data: {
       name: settingsValues.name,
       darkMode: settingsValues.darkMode,
+      language: settingsValues.language as LANGUAGE,
     },
   });
 }
