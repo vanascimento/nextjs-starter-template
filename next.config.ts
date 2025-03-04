@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -7,5 +8,6 @@ const nextConfig: NextConfig = {
     domains: ["images.unsplash.com"],
   },
 };
+const withNextIntl = createNextIntlPlugin("./i18n/requests.ts");
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

@@ -20,12 +20,14 @@ import { toast } from "sonner";
 import { CreateNewUserWithEmailVerification } from "@/app/actions/register";
 import { useRouter } from "next/navigation";
 import { InitiateLoginProcessAction } from "@/app/actions/login";
+import { useTranslations } from "next-intl";
 
 const log = logger.child({ module: "RegisterForm" });
 
 export const LogInComponent = () => {
   const [submitError, setSubmitError] = useState<Error | null>(null);
   const router = useRouter();
+  const t = useTranslations();
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -52,9 +54,11 @@ export const LogInComponent = () => {
   return (
     <div className="flex flex-col w-full ">
       <div className="flex flex-col space-y-2 text-center ">
-        <h1 className="text-2xl font-semibold tracking-tight ">Sign in</h1>
+        <h1 className="text-2xl font-semibold tracking-tight ">
+          {t("Auth.LoginTitle")}
+        </h1>
         <p className="text-sm text-muted-foreground">
-          Enter your email and password below to access your dashboard.
+          {t("Auth.LoginDescription")}
         </p>
       </div>
       <Form {...form}>
@@ -99,7 +103,9 @@ export const LogInComponent = () => {
                       className="px-0 font-normal"
                       asChild
                     >
-                      <Link href="/auth/forgot-password">Forgot password?</Link>
+                      <Link href="/auth/forgot-password">
+                        {t("Auth.ForgotPassword")}
+                      </Link>
                     </Button>
 
                     <Button
@@ -109,7 +115,7 @@ export const LogInComponent = () => {
                       asChild
                     >
                       <Link href="/auth/send-verification-token">
-                        Resend verification token
+                        {t("Auth.ResendVerificationToken")}
                       </Link>
                     </Button>
                   </div>
@@ -131,7 +137,7 @@ export const LogInComponent = () => {
             type="submit"
             className="w-full"
           >
-            Sign in
+            {t("Auth.SignIn")}
           </Button>
         </form>
       </Form>

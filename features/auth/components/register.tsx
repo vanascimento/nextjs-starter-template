@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { CreateNewUserWithEmailVerification } from "@/app/actions/register";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const log = logger.child({ module: "RegisterForm" });
 
@@ -26,6 +27,7 @@ export const RegisterComponent = () => {
   const [submitError, setSubmitError] = useState<Error | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<boolean>(false);
   const router = useRouter();
+  const t = useTranslations();
 
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
@@ -71,10 +73,10 @@ export const RegisterComponent = () => {
     <div className="flex flex-col w-full ">
       <div className="flex flex-col space-y-2 text-center ">
         <h1 className="text-2xl font-semibold tracking-tight ">
-          Create an account
+          {t("Register.RegisterTitle")}
         </h1>
         <p className="text-sm text-muted-foreground">
-          Enter your email and password below to create your account
+          {t("Register.RegisterDescription")}
         </p>
       </div>
       <Form {...form}>
@@ -119,7 +121,10 @@ export const RegisterComponent = () => {
                       className="px-0 font-normal"
                       asChild
                     >
-                      <Link href="/auth/reset">Already has an account?</Link>
+                      <Link href="/auth/reset">
+                        {" "}
+                        {t("Register.AlreadyHaveAccount")}
+                      </Link>
                     </Button>
                   </div>
 

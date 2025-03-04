@@ -1,0 +1,16 @@
+{
+  "welcome": "Welcome to the app",
+  "Auth": {
+    "LoginTitle": "Login",
+    "LoginDescription": "Please enter your credentials to login",
+    "ForgotPassword": "Forgot Password?",
+    "ResendVerificationToken": "Resend Verification Token",
+    "SignIn": "Sign In"
+  },
+  "Register": {
+    "RegisterTitle": "Create Account",
+    "RegisterDescription": "Please enter your details to create a new Account",
+    "AlreadyHaveAccount": "Already have an account?",
+    "CreateAccount": "Create Account"
+  }
+}
