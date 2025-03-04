@@ -7,6 +7,11 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum LANGUAGE {
+  EN
+  PT_BR
+}
+
 model User {
   id            String          @id @default(cuid()) @map("TX_ID")
   name          String?         @map("TX_NAME")
@@ -15,6 +20,7 @@ model User {
   emailVerified Boolean         @default(false) @map("BO_EMAIL_VERIFIED")
   image         String?         @map("TX_IMAGE")
   darkMode      Boolean         @default(false) @map("BO_DARK_MODE")
+  language      LANGUAGE        @default(EN) @map("EN_LANGUAGE")
   accounts      Account[]
   sessions      Session[]
   // Optional for WebAuthn support
