@@ -151,7 +151,6 @@ export default function EditProfileDialogComponent({
                 </FormItem>
               )}
             />
-            {JSON.stringify(form.getValues())}
             <Button
               type="submit"
               className="w-full"
