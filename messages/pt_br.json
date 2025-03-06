@@ -1,0 +1,29 @@
+{
+  "welcome": "Bem-vindo ao aplicativo",
+  "Commons": {
+    "Save": "Salvar"
+  },
+  "Auth": {
+    "LoginTitle": "Login",
+    "LoginDescription": "Por favor, insira suas credenciais para fazer login",
+    "ForgotPassword": "Esqueceu a senha?",
+    "ResendVerificationToken": "Reenviar Token de Verificação",
+    "SignIn": "Entrar"
+  },
+  "Register": {
+    "RegisterTitle": "Criar Conta",
+    "RegisterDescription": "Por favor, insira seus dados para criar uma nova conta",
+    "AlreadyHaveAccount": "Já tem uma conta?",
+    "CreateAccount": "Criar Conta"
+  },
+  "ProfilePopup": {
+    "Title": "Alterar seu perfil",
+    "Description": "Altere suas configurações de perfil aqui. Essa definição será salva no banco de dados.",
+    "DarkMode": "Modo Escuro",
+    "DarkModeDescription": "Ativar o modo escuro para a interface do usuário",
+    "Language": "Idioma",
+    "LanguageDescription": "Selecione o idioma da interface",
+    "LanguagePortuguese": "Português",
+    "LanguageEnglish": "Inglês"
+  }
+}

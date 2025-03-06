@@ -1,12 +1,13 @@
+import { fetchCurrentUserLanguage } from "@/features/profile/api/save-profile-settings";
 import { getRequestConfig } from "next-intl/server";
 
 export default getRequestConfig(async () => {
-  // Provide a static locale, fetch a user setting,
-  // read from `cookies()`, `headers()`, etc.
+  let language = await fetchCurrentUserLanguage();
   const locale = "en";
 
   return {
     locale,
-    messages: (await import(`./../messages/${locale}.json`)).default,
+    messages: (await import(`./../messages/${language?.toLowerCase()}.json`))
+      .default,
   };
 });

@@ -19,6 +19,7 @@ declare module "next-auth" {
       emailVerified: boolean;
       name: string;
       darkMode: boolean;
+      language: "EN" | "PT_BR";
       /**
        * By default, TypeScript merges new interface properties and overwrites existing ones.
        * In this case, the default session user properties will be overwritten,
@@ -92,6 +93,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       session.user.name = user.name || "";
       session.user.darkMode = user.darkMode || false;
+      session.user.language = user.language || "EN";
       log.debug({ session }, "session callback");
       return session;
     },

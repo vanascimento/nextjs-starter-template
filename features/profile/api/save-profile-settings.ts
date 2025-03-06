@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { ChangeProfileSettingsSchemaType } from "../schema/change-profile-settings";
 import { db } from "@/lib/prisma";
 import { LANGUAGE } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 /**
  * Save the profile settings to the database
@@ -26,4 +27,23 @@ export default async function saveProfileSettings(
       language: settingsValues.language as LANGUAGE,
     },
   });
+
+  revalidatePath("/");
 }
+
+export const fetchCurrentUserLanguage = async () => {
+  const session = await auth();
+  if (!session) {
+    throw new Error("User not authenticated");
+  }
+
+  const userLanguage = await db.user.findUnique({
+    where: {
+      email: session.user.email!,
+    },
+    select: {
+      language: true,
+    },
+  });
+  return userLanguage?.language;
+};

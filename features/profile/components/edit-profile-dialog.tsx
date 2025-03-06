@@ -31,6 +31,9 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { logger } from "@/lib/logger";
 import saveProfileSettings from "../api/save-profile-settings";
+import { useTranslations } from "next-intl";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface EditProfileDialogProps {
   openButtonText?: string;
@@ -47,8 +50,11 @@ export default function EditProfileDialogComponent({
     defaultValues: {
       name: session.data?.user?.name,
       darkMode: session.data?.user?.darkMode,
+      language: session.data?.user?.language,
     },
   });
+
+  const t = useTranslations();
 
   const onSubmit = async (data: ChangeProfileSettingsSchemaType) => {
     const toastId = toast.loading("Saving profile settings...");
@@ -66,11 +72,8 @@ export default function EditProfileDialogComponent({
       <DialogTrigger>{openButtonText}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Change your profile</DialogTitle>
-          <DialogDescription>
-            Change your profile settings here. This definition will be saved in
-            the database.
-          </DialogDescription>
+          <DialogTitle>{t("ProfilePopup.Title")}</DialogTitle>
+          <DialogDescription>{t("ProfilePopup.Description")}</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form className="space-y-3" onSubmit={form.handleSubmit(onSubmit)}>
@@ -94,9 +97,9 @@ export default function EditProfileDialogComponent({
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                   <div className="space-y-0.5">
-                    <FormLabel>Dark mode</FormLabel>
+                    <FormLabel>{t("ProfilePopup.DarkMode")}</FormLabel>
                     <FormDescription>
-                      Enable dark mode for a better experience.
+                      {t("ProfilePopup.DarkModeDescription")}
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -109,12 +112,52 @@ export default function EditProfileDialogComponent({
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="language"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                  <div className="space-y-0.5">
+                    <FormLabel>{t("ProfilePopup.Language")}</FormLabel>
+                    <FormDescription>
+                      {t("ProfilePopup.LanguageDescription")}
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    >
+                      <FormItem className="flex items-center space-x-2">
+                        <FormControl>
+                          <RadioGroupItem value="EN" id="r2" />
+                        </FormControl>
+                        <FormLabel>
+                          {t("ProfilePopup.LanguageEnglish")}
+                        </FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-2">
+                        <FormControl>
+                          <RadioGroupItem value="PT_BR" id="r3" />
+                        </FormControl>
+                        <FormLabel>
+                          {t("ProfilePopup.LanguagePortuguese")}{" "}
+                        </FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {JSON.stringify(form.getValues())}
             <Button
               type="submit"
               className="w-full"
-              disabled={!form.formState.isDirty || form.formState.isSubmitting}
+              disabled={form.formState.isSubmitting}
             >
-              Save
+              {t("Commons.Save")}
             </Button>
           </form>
         </Form>

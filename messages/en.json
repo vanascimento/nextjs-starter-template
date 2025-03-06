@@ -1,5 +1,8 @@
 {
   "welcome": "Welcome to the app",
+  "Commons": {
+    "Save": "Save"
+  },
   "Auth": {
     "LoginTitle": "Login",
     "LoginDescription": "Please enter your credentials to login",
@@ -12,5 +15,15 @@
     "RegisterDescription": "Please enter your details to create a new Account",
     "AlreadyHaveAccount": "Already have an account?",
     "CreateAccount": "Create Account"
+  },
+  "ProfilePopup": {
+    "Title": "Change your profile",
+    "Description": "Change your profile settings here. This definition will be saved in the database.",
+    "DarkMode": "Dark Mode",
+    "DarkModeDescription": "Enable dark mode for the app",
+    "Language": "Language",
+    "LanguageDescription": "Select the app language",
+    "LanguagePortuguese": "Portuguese",
+    "LanguageEnglish": "English"
   }
 }
