@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import LoginCover from "@/assets/images/login_cover.png";
 
 function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -9,7 +10,7 @@ function AuthLayout({ children }: { children: React.ReactNode }) {
         <div className="relative hidden h-full flex-col bg-muted p-10 text-white font-semibold dark:border-r lg:flex">
           <div className="absolute inset-0 bg-black opacity-80"></div>
           <Image
-            src="/cover.png"
+            src={LoginCover}
             alt="Image"
             layout="fill"
             priority

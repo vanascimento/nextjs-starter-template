@@ -34,7 +34,7 @@ export default async function saveProfileSettings(
 export const fetchCurrentUserLanguage = async () => {
   const session = await auth();
   if (!session) {
-    throw new Error("User not authenticated");
+    return "en";
   }
 
   const userLanguage = await db.user.findUnique({
