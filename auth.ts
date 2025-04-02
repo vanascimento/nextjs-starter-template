@@ -85,7 +85,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async session({ session, token }) {
-      log.debug({ session, token }, "entering in session callback");
       let user = await GetUserByEmail(String(token.email));
       if (!user) {
         return session;
@@ -94,7 +93,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.user.name = user.name || "";
       session.user.darkMode = user.darkMode || false;
       session.user.language = user.language || "EN";
-      log.debug({ session }, "session callback");
       return session;
     },
   },

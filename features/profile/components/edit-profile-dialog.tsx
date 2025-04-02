@@ -34,6 +34,7 @@ import saveProfileSettings from "../api/save-profile-settings";
 import { useTranslations } from "next-intl";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useTheme } from "next-themes";
 
 interface EditProfileDialogProps {
   openButtonText?: string;
@@ -45,6 +46,7 @@ export default function EditProfileDialogComponent({
 }: EditProfileDialogProps) {
   const { modelOpen, closeModal } = useProfileStore();
   const session = useSession();
+  const { setTheme } = useTheme();
   const form = useForm<ChangeProfileSettingsSchemaType>({
     resolver: zodResolver(ChangeProfileSettingsSchema),
     defaultValues: {
@@ -61,6 +63,8 @@ export default function EditProfileDialogComponent({
     try {
       await saveProfileSettings(data);
       toast.success("Profile settings saved", { id: toastId });
+      data.darkMode && setTheme("dark");
+      !data.darkMode && setTheme("light");
     } catch (error) {
       log.error(error, "Failed to save profile settings");
       toast.error("Failed to save profile settings", { id: toastId });
